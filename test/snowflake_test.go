@@ -8,8 +8,11 @@ import (
 )
 
 func TestNewSnowflake(t *testing.T) {
-	s, _ := snowflake.NewSnowflake(1)
-
+	s, err := snowflake.NewSnowflake(1)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	var count int64
 
 	// 获取当前时间
