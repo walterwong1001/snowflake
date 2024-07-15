@@ -16,25 +16,25 @@ const (
 	EPOCH           = 1721001600000                // 2024-07-15 00:00:00 UTC in milliseconds
 )
 
-type snowflake struct {
+type Snowflake struct {
 	mutex         sync.Mutex
 	machineId     uint16
 	sequence      uint64
 	lastTimestamp int64
 }
 
-func NewSnowflake(machineId uint16) (*snowflake, error) {
+func NewSnowflake(machineId uint16) (*Snowflake, error) {
 	if machineId > MAX_MACHINE_ID {
 		return nil, errors.New(fmt.Sprintf("Machine Id can't be greater than %d", MAX_MACHINE_ID))
 	}
-	return &snowflake{
+	return &Snowflake{
 		machineId:     machineId,
 		sequence:      0,
 		lastTimestamp: 0,
 	}, nil
 }
 
-func (s *snowflake) NextID() uint64 {
+func (s *Snowflake) NextID() uint64 {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
