@@ -46,7 +46,7 @@ func main() {
 	ctx := context.Background()
 
 	etcdConfig := clientv3.Config{
-		Endpoints: []string{"localhost:2179", "localhost:2279", "localhost:2379",
+		Endpoints: []string{"localhost:2179", "localhost:2279", "localhost:2379"},
 		DialTimeout: 5 * time.Second,
 	}
 
