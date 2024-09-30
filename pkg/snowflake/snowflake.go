@@ -21,12 +21,12 @@ const (
 
 type Snowflake struct {
 	mutex         sync.Mutex
-	machineId     uint16
-	sequence      uint64
+	machineId     int
+	sequence      int
 	lastTimestamp int64
 }
 
-func NewSnowflake(machineId uint16) (*Snowflake, error) {
+func NewSnowflake(machineId int) (*Snowflake, error) {
 	if machineId > MAX_MACHINE_ID {
 		return nil, errors.New(fmt.Sprintf("Machine Id can't be greater than %d", MAX_MACHINE_ID))
 	}
@@ -37,7 +37,7 @@ func NewSnowflake(machineId uint16) (*Snowflake, error) {
 	}, nil
 }
 
-func (s *Snowflake) NextID() uint64 {
+func (s *Snowflake) NextID() int64 {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -58,8 +58,7 @@ func (s *Snowflake) NextID() uint64 {
 
 	s.lastTimestamp = timestamp
 
-	return uint64(timestamp-EPOCH)<<(MACHINE_ID_BITS+SEQUENCE_BITS) | uint64(s.machineId)<<SEQUENCE_BITS | s.sequence
-
+	return (timestamp-EPOCH)<<(MACHINE_ID_BITS+SEQUENCE_BITS) | int64(s.machineId<<SEQUENCE_BITS) | int64(s.sequence)
 }
 
 func tilNextMillis(timestamp int64) int64 {

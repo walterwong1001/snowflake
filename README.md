@@ -14,6 +14,16 @@ By the way, the start time of the Snowflake is set to "2024-07-15 00:00:00 +0000
 
 You should use NTP to keep your system clock accurate.  Snowflake protects from non-monotonic clocks, i.e. clocks that run backwards.  If your clock is running fast and NTP tells it to repeat a few milliseconds, snowflake will refuse to generate ids(return 0) until a time that is after the last time we generated an id. Even better, run in a mode where ntp won't move the clock backwards. See http://wiki.dovecot.org/TimeMovedBackwards#Time_synchronization for tips on how to do this.
 
+# Snowflake ID Generator
+
+A simple and efficient ID generator using the Snowflake algorithm and Etcd for distributed unique ID generation.
+
+## Features
+
+- Generates unique 64-bit IDs using the Snowflake algorithm.
+- Integrates with Etcd for distributed configuration and worker ID assignment.
+- Easy to use with Go interfaces.
+
 ## Installation
 
 ```
@@ -22,10 +32,35 @@ go get github.com/walterwong1001/snowflake
 
 ## Usage
 ```go
-s, err := snowflake.NewSnowflake(1)
-if err != nil {
-    log.Println(err)
-    return
+package main
+
+import (
+	"context"
+	"log"
+	"time"
+	"go.etcd.io/etcd/client/v3"
+	"github.com/yourusername/snowflake"
+)
+
+func main() {
+	ctx := context.Background()
+
+	etcdConfig := clientv3.Config{
+		Endpoints: []string{"localhost:2179", "localhost:2279", "localhost:2379",
+		DialTimeout: 5 * time.Second,
+	}
+
+	generator := snowflake.NewGenerator(ctx, etcdConfig)
+
+	for i := 0; i < 10; i++ {
+		newID := generator.Next()
+		log.Printf("Generated ID: %d", newID)
+	}
+
+	log.Printf("Worker ID: %d", generator.WorkId())
 }
-s.NextID()
+
 ```
+
+
+
