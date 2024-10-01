@@ -124,7 +124,6 @@ func renewLease(ctx context.Context, client *clientv3.Client, key, value string)
 	}
 
 	_, err = client.Put(ctx, key, value, clientv3.WithLease(resp.ID))
-	log.Printf("Renew lease: %s : %s", key, value)
 
 	return err
 }
